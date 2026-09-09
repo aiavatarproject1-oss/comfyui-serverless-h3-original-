@@ -15,7 +15,7 @@
 # torchaudio, pas garanti dans le base -> on l'ajoute explicitement (cu128, matche le torch
 # du base 5.8.6 qui est deja Blackwell/cu128 puisque krea tourne dessus sur RTX PRO 6000).
 
-ARG BASE=runpod/worker-comfyui:5.8.6-base
+ARG BASE=runpod/worker-comfyui:5.10.0-base
 FROM ${BASE}
 
 # --- 1. Epingler ComfyUI au SHA H3 (0.30.0) ---
