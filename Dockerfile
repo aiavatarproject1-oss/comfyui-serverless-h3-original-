@@ -48,13 +48,11 @@ RUN TV=$(python -c "import torch; print(torch.__version__.split('+')[0])") && \
 
 RUN git clone https://github.com/Larryvrh/ComfyUI-MiniMax-H3-Turbo \
 /comfyui/custom_nodes/ComfyUI-MiniMax-H3-Turbo
-RUN pip install -r \
-/comfyui/custom_nodes/ComfyUI-MiniMax-H3-Turbo/requirements.txt
     
 RUN git clone https://github.com/kijai/ComfyUI-KJNodes \
 /comfyui/custom_nodes/ComfyUI-KJNodes
 RUN pip install -r \
-/comfyui/custom_nodes/ComfyUI-VideoHelperSuite/requirements.txt
+/comfyui/custom_nodes/ComfyUI-KJNodes/requirements.txt
 
 #My custom nodes    
 RUN git clone https://github.com/rgthree/rgthree-comfy \
