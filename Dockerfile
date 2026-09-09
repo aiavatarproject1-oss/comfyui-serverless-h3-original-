@@ -21,11 +21,11 @@ FROM ${BASE}
 # --- 1. Epingler ComfyUI au SHA H3 (0.30.0) ---
 # On met a jour le clone git EXISTANT (/comfyui, pose par comfy-cli). Rejouer `comfy install`
 # echoue sur un workspace existant (gotcha herite de krea). Assert de version = filet.
-ARG COMFYUI_SHA=16e3f3034f2bba1fff6c70cbd759339778555cd6
-RUN git -C /comfyui fetch --depth 1 origin "${COMFYUI_SHA}" && \
-    git -C /comfyui checkout -q FETCH_HEAD && \
-    uv pip install -r /comfyui/requirements.txt && \
-    python -c "import sys; sys.path.insert(0,'/comfyui'); from comfyui_version import __version__ as v; print('ComfyUI', v); assert v.startswith('0.30'), v"
+# ARG COMFYUI_SHA=16e3f3034f2bba1fff6c70cbd759339778555cd6
+# RUN git -C /comfyui fetch --depth 1 origin "${COMFYUI_SHA}" && \
+#     git -C /comfyui checkout -q FETCH_HEAD && \
+#     uv pip install -r /comfyui/requirements.txt && \
+#     python -c "import sys; sys.path.insert(0,'/comfyui'); from comfyui_version import __version__ as v; print('ComfyUI', v); assert v.startswith('0.30'), v"
 
 # --- 2. torchaudio (requis par comfy_extras/nodes_minimax_h3.py) ---
 # Pin sur la version exacte du torch deja installe pour ne pas le perturber ; fallback non-pin.
@@ -38,13 +38,37 @@ RUN TV=$(python -c "import torch; print(torch.__version__.split('+')[0])") && \
 # --- 3. Node packs H3 (epingles aux revisions presentes sur le volume) ---
 # Pas necessaires au t2v/i2v/r2v de base (nodes natifs), mais utiles pour le chemin turbo
 # (DiffusionModelLoaderKJ + MiniMaxH3TurboLoRA/SigmaShift/TurboSampler).
-ARG KJNODES_SHA=44fda83f307b7aee4a27ee268c86aaa74a5f5612
-ARG H3TURBO_SHA=55f85c6dbe58b41aaf5ee610d225ecce0a00ee17
-RUN cd /comfyui/custom_nodes && \
-    git clone https://github.com/kijai/ComfyUI-KJNodes.git && \
-    git -C ComfyUI-KJNodes checkout ${KJNODES_SHA} && \
-    git clone https://github.com/Larryvrh/ComfyUI-MiniMax-H3-Turbo.git && \
-    git -C ComfyUI-MiniMax-H3-Turbo checkout ${H3TURBO_SHA}
+# ARG KJNODES_SHA=44fda83f307b7aee4a27ee268c86aaa74a5f5612
+# ARG H3TURBO_SHA=55f85c6dbe58b41aaf5ee610d225ecce0a00ee17
+# RUN cd /comfyui/custom_nodes && \
+#     git clone https://github.com/kijai/ComfyUI-KJNodes.git && \
+#     git -C ComfyUI-KJNodes checkout ${KJNODES_SHA} && \
+#     git clone https://github.com/Larryvrh/ComfyUI-MiniMax-H3-Turbo.git && \
+#     git -C ComfyUI-MiniMax-H3-Turbo checkout ${H3TURBO_SHA}
+
+RUN git clone https://github.com/Larryvrh/ComfyUI-MiniMax-H3-Turbo \
+/comfyui/custom_nodes/ComfyUI-MiniMax-H3-Turbo
+RUN pip install -r \
+/comfyui/custom_nodes/ComfyUI-MiniMax-H3-Turbo/requirements.txt
+    
+RUN git clone https://github.com/kijai/ComfyUI-KJNodes \
+/comfyui/custom_nodes/ComfyUI-KJNodes
+RUN pip install -r \
+/comfyui/custom_nodes/ComfyUI-VideoHelperSuite/requirements.txt
+
+#My custom nodes    
+RUN git clone https://github.com/rgthree/rgthree-comfy \
+/comfyui/custom_nodes/rgthree-comfy
+RUN git clone https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite \
+/comfyui/custom_nodes/ComfyUI-VideoHelperSuite
+RUN pip install -r \
+/comfyui/custom_nodes/ComfyUI-VideoHelperSuite/requirements.txt
+
+RUN git clone https://github.com/poomshift/media-url-loader \
+/comfyui/custom_nodes/media-url-loader
+RUN pip install -r \
+/comfyui/custom_nodes/media-url-loader/requirements.txt
+
 # Dependances des custom nodes dans le venv de lancement (idem krea).
 RUN for r in /comfyui/custom_nodes/*/requirements.txt; do \
       [ -f "$r" ] && uv pip install --no-cache-dir -r "$r" || true; \
