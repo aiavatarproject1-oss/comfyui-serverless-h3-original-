@@ -36,8 +36,7 @@ RUN TV=$(python -c "import torch; print(torch.__version__.split('+')[0])") && \
     python -c "import torchaudio; print('torchaudio', torchaudio.__version__)"
 
 # --- 2b. torchcodec (requis par torchaudio load_with_torchcodec / LoadAudioFromURL) ---
-RUN uv pip install --no-cache-dir "torchcodec>=0.12" && \
-    python -c "import torchcodec; print('torchcodec OK')"
+RUN uv pip install runpod requests websocket-client "torchcodec>=0.12"
 
 # --- 3. Node packs H3 (epingles aux revisions presentes sur le volume) ---
 # Pas necessaires au t2v/i2v/r2v de base (nodes natifs), mais utiles pour le chemin turbo
